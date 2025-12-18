@@ -1,0 +1,17 @@
+{
+  "style": "default",
+  "typescript": true,
+  "tsConfigPath": "./tsconfig.app.json",
+  "tailwind": {
+    "config": "./postcss.config.js",
+    "css": "./src/style.css",
+    "baseColor": "zinc"
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  }
+}

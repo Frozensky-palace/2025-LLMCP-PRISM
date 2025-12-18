@@ -1,0 +1,84 @@
+/**
+ * PRISM API 封装
+ */
+import axios from 'axios'
+import type {
+  GenerateRequest,
+  GenerateResponse,
+  FeedbackRequest,
+  FeedbackResponse,
+  Session,
+} from '@/types'
+
+// 创建 axios 实例
+const api = axios.create({
+  baseURL: '/api',
+  timeout: 60000, // 图像生成可能需要较长时间
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+// 请求拦截器
+api.interceptors.request.use(
+  (config) => {
+    // 可以在这里添加 token 等认证信息
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+// 响应拦截器
+api.interceptors.response.use(
+  (response) => {
+    return response.data
+  },
+  (error) => {
+    console.error('API Error:', error)
+    return Promise.reject(error)
+  }
+)
+
+// API 方法
+export const prismApi = {
+  /**
+   * 生成图片
+   */
+  async generate(data: GenerateRequest): Promise<GenerateResponse> {
+    return api.post('/v1/generate', data)
+  },
+
+  /**
+   * 提交反馈并迭代
+   */
+  async feedback(data: FeedbackRequest): Promise<FeedbackResponse> {
+    return api.post('/v1/feedback', data)
+  },
+
+  /**
+   * 获取会话历史
+   */
+  async getSessionVersions(sessionId: string): Promise<Session> {
+    return api.get(`/v1/sessions/${sessionId}/versions`)
+  },
+
+  /**
+   * 回滚到指定版本
+   */
+  async rollback(sessionId: string, targetVersion: number): Promise<FeedbackResponse> {
+    return api.post(`/v1/sessions/${sessionId}/rollback`, {
+      target_version: targetVersion,
+    })
+  },
+
+  /**
+   * 健康检查
+   */
+  async health(): Promise<{ status: string }> {
+    return api.get('/health')
+  },
+}
+
+export default api
